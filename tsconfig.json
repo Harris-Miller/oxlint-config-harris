@@ -9,5 +9,5 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["index.ts", "rules/**/*.ts", "oxlint.config.ts", "scripts/**/*.mjs"]
+  "include": ["index.ts", "configs/**/*.ts", "rules/**/*.ts", "oxlint.config.ts", "scripts/**/*.mjs"]
 }

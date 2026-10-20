@@ -6,6 +6,7 @@
   "author": "Harris Miller <harrismillerconsulting@gmail.com>",
   "files": [
     "index.ts",
+    "configs",
     "rules",
     "GAPS.md"
   ],

@@ -1,7 +1,7 @@
 import type { DummyRuleMap } from 'oxlint';
 
 /** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
-const eslintRules: DummyRuleMap = {
+export const eslintRules: DummyRuleMap = {
   'eslint/array-callback-return': ['error', { allowImplicit: true }],
   'eslint/arrow-body-style': 'off',
   'eslint/block-scoped-var': 'error',
@@ -245,98 +245,4 @@ const eslintRules: DummyRuleMap = {
   'eslint/valid-typeof': 'error',
   'eslint/vars-on-top': 'error',
   'eslint/yoda': 'error',
-};
-
-const importRules: DummyRuleMap = {
-  'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
-  'import/default': 'off',
-  'import/export': 'error',
-  'import/exports-last': 'off',
-  'import/extensions': 'off',
-  'import/first': 'error',
-  'import/group-exports': 'off',
-  'import/max-dependencies': 'off',
-  'import/named': 'error',
-  'import/namespace': 'off',
-  'import/newline-after-import': 'error',
-  'import/no-absolute-path': 'error',
-  'import/no-amd': 'error',
-  'import/no-anonymous-default-export': 'error',
-  'import/no-commonjs': 'off',
-  'import/no-cycle': 'off',
-  'import/no-default-export': 'off',
-  'import/no-duplicates': 'error',
-  'import/no-dynamic-require': 'error',
-  'import/no-empty-named-blocks': 'error',
-  'import/no-mutable-exports': 'error',
-  'import/no-named-as-default': 'off',
-  'import/no-named-as-default-member': 'off',
-  'import/no-named-default': 'error',
-  'import/no-named-export': 'off',
-  'import/no-namespace': 'off',
-  'import/no-nodejs-modules': 'off',
-  'import/no-relative-parent-imports': 'off',
-  'import/no-self-import': 'error',
-  'import/no-unassigned-import': 'off',
-  'import/no-webpack-loader-syntax': 'error',
-  'import/prefer-default-export': 'off',
-  'import/unambiguous': 'error',
-};
-
-/** Oxc plugin: default rules → error, rest off */
-const oxcRules: DummyRuleMap = {
-  'oxc/approx-constant': 'off',
-  'oxc/bad-array-method-on-arguments': 'error',
-  'oxc/bad-bitwise-operator': 'off',
-  'oxc/bad-char-at-comparison': 'error',
-  'oxc/bad-comparison-sequence': 'error',
-  'oxc/bad-match-all-arg': 'error',
-  'oxc/bad-min-max-func': 'error',
-  'oxc/bad-object-literal-comparison': 'error',
-  'oxc/bad-replace-all-arg': 'error',
-  'oxc/branches-sharing-code': 'off',
-  'oxc/const-comparisons': 'error',
-  'oxc/double-comparisons': 'error',
-  'oxc/erasing-op': 'error',
-  'oxc/misrefactored-assign-op': 'off',
-  'oxc/missing-throw': 'error',
-  'oxc/no-accumulating-spread': 'off',
-  'oxc/no-async-await': 'off',
-  'oxc/no-async-endpoint-handlers': 'off',
-  'oxc/no-barrel-file': 'off',
-  'oxc/no-const-enum': 'off',
-  'oxc/no-map-spread': 'off',
-  'oxc/no-optional-chaining': 'off',
-  'oxc/no-rest-spread-properties': 'off',
-  'oxc/no-this-in-exported-function': 'off',
-  'oxc/number-arg-out-of-range': 'error',
-  'oxc/only-used-in-recursion': 'error',
-  'oxc/uninvoked-array-callback': 'error',
-};
-
-/** Promise plugin: default rules → error, rest off */
-const promiseRules: DummyRuleMap = {
-  'promise/always-return': 'off',
-  'promise/avoid-new': 'off',
-  'promise/catch-or-return': 'off',
-  'promise/no-callback-in-promise': 'off',
-  'promise/no-multiple-resolved': 'off',
-  'promise/no-nesting': 'off',
-  'promise/no-new-statics': 'off',
-  'promise/no-promise-in-callback': 'off',
-  'promise/no-return-in-finally': 'off',
-  'promise/no-return-wrap': 'off',
-  'promise/param-names': 'off',
-  'promise/prefer-await-to-callbacks': 'off',
-  'promise/prefer-await-to-then': 'off',
-  'promise/prefer-catch': 'off',
-  'promise/spec-only': 'off',
-  'promise/valid-params': 'off',
-};
-
-export const ecmaRules: DummyRuleMap = {
-  ...eslintRules,
-  ...importRules,
-  ...oxcRules,
-  ...promiseRules,
 };

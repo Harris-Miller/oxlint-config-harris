@@ -103,9 +103,11 @@ function serializeRules(rules) {
 }
 
 function writeRulesModule(filePath, exportName, rules) {
-  // Cast: JSON emission widens tuples to string[]; oxlint's RuleMap wants literal tuples.
-  const body = `/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
-export const ${exportName} = ${serializeRules(rules)} as Record<string, unknown>;
+  // DummyRuleMap: JSON emission widens tuples; oxlint's RuleMap wants literal tuples.
+  const body = `import type { DummyRuleMap } from 'oxlint';
+
+/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
+export const ${exportName}: DummyRuleMap = ${serializeRules(rules)};
 `;
   writeFileSync(filePath, body);
 }
@@ -119,21 +121,28 @@ function pluginDefaults(scope) {
   return out;
 }
 
-function writeEcmaModule(filePath, groups) {
-  const parts = Object.entries(groups).map(
-    ([name, rules]) => `const ${name} = ${serializeRules(rules)} as Record<string, unknown>;`,
-  );
-  const body = `/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
-${parts.join('\n\n')}
+function writeReactAggregator(filePath) {
+  writeFileSync(
+    filePath,
+    `import type { DummyRuleMap } from 'oxlint';
 
-export const ecmaRules = {
-  ...eslintRules,
-  ...importRules,
-  ...oxcRules,
-  ...promiseRules,
-} as Record<string, unknown>;
-`;
-  writeFileSync(filePath, body);
+import { jsxA11yRules } from './jsx-a11y.ts';
+import { reactPluginRules } from './react-plugin.ts';
+
+export const reactRules: DummyRuleMap = {
+  ...reactPluginRules,
+  ...jsxA11yRules,
+};
+`,
+  );
+}
+
+function splitByPrefix(rules, prefix) {
+  const out = {};
+  for (const [k, v] of Object.entries(rules)) {
+    if (k.startsWith(`${prefix}/`)) out[k] = v;
+  }
+  return out;
 }
 
 const eslint = mapRules(configRules(eslintConfig));
@@ -158,14 +167,17 @@ const typescriptMapped = { ...tsFromEslint, ...typescript.mapped };
 const rulesDir = join(root, 'rules');
 mkdirSync(rulesDir, { recursive: true });
 
-writeEcmaModule(join(rulesDir, 'ecma.ts'), {
-  eslintRules: eslintMapped,
-  importRules: importMapped,
-  oxcRules: oxcMapped,
-  promiseRules: promiseMapped,
-});
+const reactPluginMapped = splitByPrefix(reactAll.mapped, 'react');
+const jsxA11yMapped = splitByPrefix(reactAll.mapped, 'jsx-a11y');
+
+writeRulesModule(join(rulesDir, 'eslint.ts'), 'eslintRules', eslintMapped);
+writeRulesModule(join(rulesDir, 'import.ts'), 'importRules', importMapped);
+writeRulesModule(join(rulesDir, 'oxc.ts'), 'oxcRules', oxcMapped);
+writeRulesModule(join(rulesDir, 'promise.ts'), 'promiseRules', promiseMapped);
 writeRulesModule(join(rulesDir, 'typescript.ts'), 'typescriptRules', typescriptMapped);
-writeRulesModule(join(rulesDir, 'react.ts'), 'reactRules', reactAll.mapped);
+writeRulesModule(join(rulesDir, 'react-plugin.ts'), 'reactPluginRules', reactPluginMapped);
+writeRulesModule(join(rulesDir, 'jsx-a11y.ts'), 'jsxA11yRules', jsxA11yMapped);
+writeReactAggregator(join(rulesDir, 'react.ts'));
 writeRulesModule(join(rulesDir, 'vitest.ts'), 'vitestRules', vitest.mapped);
 
 const allGaps = [
@@ -187,76 +199,17 @@ ${allGaps.map(g => `| ${g.source} | \`${g.eslint}\` | \`${g.oxlint}\` | ${g.seve
 
 writeFileSync(join(root, 'GAPS.md'), gapsMd);
 
-writeFileSync(
-  join(root, 'index.ts'),
-  `import { defineConfig } from 'oxlint';
-
-import { ecmaRules } from './rules/ecma.ts';
-import { reactRules } from './rules/react.ts';
-import { typescriptRules } from './rules/typescript.ts';
-import { vitestRules } from './rules/vitest.ts';
-
-const categoriesOff = {
-  correctness: 'off',
-  suspicious: 'off',
-  pedantic: 'off',
-  perf: 'off',
-  style: 'off',
-  restriction: 'off',
-  nursery: 'off',
-} as const;
-
-// Prefer re-exporting/spreading this as the root oxlint.config.ts.
-// Oxlint extends only merges rules/plugins/overrides — not categories or options.
-// Using extends: [harris] alone drops typeAware and re-adds default plugins
-// (unicorn/oxc) unless the consumer also sets plugins: [].
-//
-// export { default } from 'oxlint-config-harris';
-// — or —
-// import harris from 'oxlint-config-harris';
-// import { defineConfig } from 'oxlint';
-// export default defineConfig({ ...harris, env: { browser: true } });
-export default defineConfig({
-  plugins: ['eslint', 'import', 'oxc', 'promise', 'typescript', 'react', 'jsx-a11y', 'vitest'],
-  categories: categoriesOff,
-  options: {
-    typeAware: true,
-  },
-  ignorePatterns: ['**/node_modules/**', '**/dist/**', 'scripts/**', 'oxlint.config.*'],
-  rules: ecmaRules,
-  overrides: [
-    {
-      files: ['**/*.{ts,mts,cts,tsx}'],
-      rules: typescriptRules,
-    },
-    {
-      files: ['**/*.{jsx,tsx}'],
-      rules: reactRules,
-    },
-    {
-      files: ['**/*.{test,spec}.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'],
-      rules: vitestRules,
-    },
-  ],
-  // oxlint's generated RuleMap is stricter than the JSON we emit from eslint-config-harris
-} as Parameters<typeof defineConfig>[0]);
-
-export { categoriesOff };
-`,
-);
-
 // Drop rule options oxlint rejects (keep severity).
 const ruleModules = [
+  [join(rulesDir, 'eslint.ts'), 'eslintRules', eslintMapped],
+  [join(rulesDir, 'import.ts'), 'importRules', importMapped],
+  [join(rulesDir, 'oxc.ts'), 'oxcRules', oxcMapped],
+  [join(rulesDir, 'promise.ts'), 'promiseRules', promiseMapped],
   [join(rulesDir, 'typescript.ts'), 'typescriptRules', typescriptMapped],
-  [join(rulesDir, 'react.ts'), 'reactRules', reactAll.mapped],
+  [join(rulesDir, 'react-plugin.ts'), 'reactPluginRules', reactPluginMapped],
+  [join(rulesDir, 'jsx-a11y.ts'), 'jsxA11yRules', jsxA11yMapped],
   [join(rulesDir, 'vitest.ts'), 'vitestRules', vitest.mapped],
 ];
-const ecmaGroups = {
-  eslintRules: eslintMapped,
-  importRules: importMapped,
-  oxcRules: oxcMapped,
-  promiseRules: promiseMapped,
-};
 const strippedOptions = [];
 for (let i = 0; i < 200; i++) {
   let err = '';
@@ -275,23 +228,13 @@ for (let i = 0; i < 200; i++) {
   if (!m) break;
   const rule = m[1];
   let fixed = false;
-  for (const [groupName, rules] of Object.entries(ecmaGroups)) {
+  for (const [filePath, exportName, rules] of ruleModules) {
     if (!(rule in rules) || !Array.isArray(rules[rule])) continue;
     strippedOptions.push({ rule, previous: rules[rule] });
     rules[rule] = rules[rule][0];
-    writeEcmaModule(join(rulesDir, 'ecma.ts'), ecmaGroups);
+    writeRulesModule(filePath, exportName, rules);
     fixed = true;
     break;
-  }
-  if (!fixed) {
-    for (const [filePath, exportName, rules] of ruleModules) {
-      if (!(rule in rules) || !Array.isArray(rules[rule])) continue;
-      strippedOptions.push({ rule, previous: rules[rule] });
-      rules[rule] = rules[rule][0];
-      writeRulesModule(filePath, exportName, rules);
-      fixed = true;
-      break;
-    }
   }
   if (!fixed) break;
 }

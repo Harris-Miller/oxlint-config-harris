@@ -28,24 +28,29 @@ Useful entry points (via the index above):
 
 ## Consumer config pattern
 
-Do **not** recommend `extends: [harris]` alone for this package.
+Named configs: `ecma`, `node`, `typescript`, `react`, `vitest` (from `configs/`). Compose in the consumer root — `index.ts` only re-exports; it does not ship a mono `defineConfig`.
 
-Oxlint `extends` merges only `rules` / `plugins` / `overrides`. It does **not** merge `categories` or `options`. Using `extends` alone drops `options.typeAware` and can re-enable default plugins (`unicorn` / `oxc`) unless the consumer sets `plugins: []`.
-
-Correct patterns:
+Oxlint `extends` merges only `rules` / `plugins` / `overrides`. It does **not** merge `categories` or `options`. Set `categories` / `options.typeAware` in the root config. Setting `plugins` overwrites defaults (`unicorn` / `oxc`) — list every plugin you want (or `plugins: []` plus override plugins).
 
 ```ts
-export { default } from 'oxlint-config-harris';
-```
-
-```ts
-import harris from 'oxlint-config-harris';
 import { defineConfig } from 'oxlint';
+import { ecma, react, typescript, vitest, vitestRules } from 'oxlint-config-harris';
 
-export default defineConfig({ ...harris /* local overrides */ });
+export default defineConfig({
+  extends: [ecma, typescript, react, vitest],
+  plugins: ['eslint', 'import', 'oxc', 'promise', 'typescript', 'react', 'jsx-a11y', 'vitest'],
+  categories: ecma.categories, // extends does not merge categories
+  options: { typeAware: true },
+  overrides: [
+    {
+      files: ['**/*.{test,spec}.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'],
+      rules: vitestRules, // vitest config ships rules with files: []
+    },
+  ],
+});
 ```
 
-This package sets `categories` all `off` and enables plugins explicitly: `eslint`, `import`, `oxc`, `promise`, `typescript`, `react`, `jsx-a11y`, `vitest`. Type-aware is on via `options.typeAware: true`. Consumers should run `oxlint --type-aware` (or equivalent) with `oxlint-tsgolint` installed.
+`vitest` enables the plugin and rules but matches no files until the consumer sets globs. Type-aware needs `oxlint-tsgolint` and `options.typeAware: true` (or `--type-aware`).
 
 ## Regenerating from ESLint
 
