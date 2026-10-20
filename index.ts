@@ -48,6 +48,6 @@ export default defineConfig({
     },
   ],
   // oxlint's generated RuleMap is stricter than the JSON we emit from eslint-config-harris
-} as Parameters<typeof defineConfig>[0]);
+});
 
 export { categoriesOff };
