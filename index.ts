@@ -1,8 +1,6 @@
 import { defineConfig } from 'oxlint';
 
-import { eslintRules } from './rules/eslint.ts';
-import { importRules } from './rules/import.ts';
-import { jsxA11yRules } from './rules/jsx-a11y.ts';
+import { ecmaRules } from './rules/ecma.ts';
 import { reactRules } from './rules/react.ts';
 import { typescriptRules } from './rules/typescript.ts';
 import { vitestRules } from './rules/vitest.ts';
@@ -34,10 +32,7 @@ export default defineConfig({
     typeAware: true,
   },
   ignorePatterns: ['**/node_modules/**', '**/dist/**', 'scripts/**', 'oxlint.config.*'],
-  rules: {
-    ...eslintRules,
-    ...importRules,
-  },
+  rules: ecmaRules,
   overrides: [
     {
       files: ['**/*.{ts,mts,cts,tsx}'],
@@ -45,10 +40,7 @@ export default defineConfig({
     },
     {
       files: ['**/*.{jsx,tsx}'],
-      rules: {
-        ...reactRules,
-        ...jsxA11yRules,
-      },
+      rules: reactRules,
     },
     {
       files: ['**/*.{test,spec}.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'],

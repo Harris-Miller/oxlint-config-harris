@@ -115,33 +115,32 @@ export const ${exportName} = ${serializeRules(rules)} as Record<string, unknown>
 const eslint = mapRules(configRules(eslintConfig));
 const importX = mapRules(configRules(importConfig));
 const typescript = mapRules(configRules(typescriptConfig));
-const reactAll = configRules(reactConfig);
-const reactOnly = {};
-const jsxA11yOnly = {};
-for (const [k, v] of Object.entries(reactAll)) {
-  if (k.startsWith('jsx-a11y/')) jsxA11yOnly[k] = v;
-  else reactOnly[k] = v;
-}
-const react = mapRules(reactOnly);
-const jsxA11y = mapRules(jsxA11yOnly);
+const reactAll = mapRules(configRules(reactConfig));
 const vitest = mapRules(configRules(vitestConfig));
+
+// typescript/* resolved from eslint core → typescript.ts; rest + import → ecma.ts
+const ecmaMapped = {};
+const tsFromEslint = {};
+for (const [k, v] of Object.entries(eslint.mapped)) {
+  if (k.startsWith('typescript/')) tsFromEslint[k] = v;
+  else ecmaMapped[k] = v;
+}
+Object.assign(ecmaMapped, importX.mapped);
+const typescriptMapped = { ...tsFromEslint, ...typescript.mapped };
 
 const rulesDir = join(root, 'rules');
 mkdirSync(rulesDir, { recursive: true });
 
-writeRulesModule(join(rulesDir, 'eslint.ts'), 'eslintRules', eslint.mapped);
-writeRulesModule(join(rulesDir, 'import.ts'), 'importRules', importX.mapped);
-writeRulesModule(join(rulesDir, 'typescript.ts'), 'typescriptRules', typescript.mapped);
-writeRulesModule(join(rulesDir, 'react.ts'), 'reactRules', react.mapped);
-writeRulesModule(join(rulesDir, 'jsx-a11y.ts'), 'jsxA11yRules', jsxA11y.mapped);
+writeRulesModule(join(rulesDir, 'ecma.ts'), 'ecmaRules', ecmaMapped);
+writeRulesModule(join(rulesDir, 'typescript.ts'), 'typescriptRules', typescriptMapped);
+writeRulesModule(join(rulesDir, 'react.ts'), 'reactRules', reactAll.mapped);
 writeRulesModule(join(rulesDir, 'vitest.ts'), 'vitestRules', vitest.mapped);
 
 const allGaps = [
   ...eslint.gaps.map(g => ({ ...g, source: 'eslint' })),
   ...importX.gaps.map(g => ({ ...g, source: 'import' })),
   ...typescript.gaps.map(g => ({ ...g, source: 'typescript' })),
-  ...react.gaps.map(g => ({ ...g, source: 'react' })),
-  ...jsxA11y.gaps.map(g => ({ ...g, source: 'jsx-a11y' })),
+  ...reactAll.gaps.map(g => ({ ...g, source: 'react' })),
   ...vitest.gaps.map(g => ({ ...g, source: 'vitest' })),
 ].sort((a, b) => a.oxlint.localeCompare(b.oxlint));
 
@@ -160,9 +159,7 @@ writeFileSync(
   join(root, 'index.ts'),
   `import { defineConfig } from 'oxlint';
 
-import { eslintRules } from './rules/eslint.ts';
-import { importRules } from './rules/import.ts';
-import { jsxA11yRules } from './rules/jsx-a11y.ts';
+import { ecmaRules } from './rules/ecma.ts';
 import { reactRules } from './rules/react.ts';
 import { typescriptRules } from './rules/typescript.ts';
 import { vitestRules } from './rules/vitest.ts';
@@ -194,10 +191,7 @@ export default defineConfig({
     typeAware: true,
   },
   ignorePatterns: ['**/node_modules/**', '**/dist/**', 'scripts/**', 'oxlint.config.*'],
-  rules: {
-    ...eslintRules,
-    ...importRules,
-  },
+  rules: ecmaRules,
   overrides: [
     {
       files: ['**/*.{ts,mts,cts,tsx}'],
@@ -205,10 +199,7 @@ export default defineConfig({
     },
     {
       files: ['**/*.{jsx,tsx}'],
-      rules: {
-        ...reactRules,
-        ...jsxA11yRules,
-      },
+      rules: reactRules,
     },
     {
       files: ['**/*.{test,spec}.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'],
@@ -224,11 +215,9 @@ export { categoriesOff };
 
 // Drop rule options oxlint rejects (keep severity).
 const ruleModules = [
-  [join(rulesDir, 'eslint.ts'), 'eslintRules', eslint.mapped],
-  [join(rulesDir, 'import.ts'), 'importRules', importX.mapped],
-  [join(rulesDir, 'typescript.ts'), 'typescriptRules', typescript.mapped],
-  [join(rulesDir, 'react.ts'), 'reactRules', react.mapped],
-  [join(rulesDir, 'jsx-a11y.ts'), 'jsxA11yRules', jsxA11y.mapped],
+  [join(rulesDir, 'ecma.ts'), 'ecmaRules', ecmaMapped],
+  [join(rulesDir, 'typescript.ts'), 'typescriptRules', typescriptMapped],
+  [join(rulesDir, 'react.ts'), 'reactRules', reactAll.mapped],
   [join(rulesDir, 'vitest.ts'), 'vitestRules', vitest.mapped],
 ];
 const strippedOptions = [];
@@ -264,11 +253,9 @@ console.log(
   JSON.stringify(
     {
       counts: {
-        eslint: Object.keys(eslint.mapped).length,
-        import: Object.keys(importX.mapped).length,
-        typescript: Object.keys(typescript.mapped).length,
-        react: Object.keys(react.mapped).length,
-        jsxA11y: Object.keys(jsxA11y.mapped).length,
+        ecma: Object.keys(ecmaMapped).length,
+        typescript: Object.keys(typescriptMapped).length,
+        react: Object.keys(reactAll.mapped).length,
         vitest: Object.keys(vitest.mapped).length,
         gaps: allGaps.length,
         strippedOptions: strippedOptions.length,
