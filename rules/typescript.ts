@@ -1,5 +1,7 @@
+import type { DummyRuleMap } from 'oxlint';
+
 /** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
-export const typescriptRules = {
+export const typescriptRules: DummyRuleMap = {
   'eslint/default-case': 'off',
   'eslint/default-param-last': 'error',
   'eslint/init-declarations': ['off', 'always'],
@@ -141,4 +143,4 @@ export const typescriptRules = {
   'typescript/unbound-method': 'error',
   'typescript/unified-signatures': 'error',
   'typescript/use-unknown-in-catch-callback-variable': 'error',
-} as Record<string, unknown>;
+};

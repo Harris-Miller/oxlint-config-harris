@@ -110,26 +110,60 @@ export const ${exportName} = ${serializeRules(rules)} as Record<string, unknown>
   writeFileSync(filePath, body);
 }
 
+function pluginDefaults(scope) {
+  const out = {};
+  for (const r of oxlintRules) {
+    if (r.scope !== scope) continue;
+    out[`${scope.replaceAll('_', '-')}/${r.value}`] = r.default ? 'error' : 'off';
+  }
+  return out;
+}
+
+function writeEcmaModule(filePath, groups) {
+  const parts = Object.entries(groups).map(
+    ([name, rules]) => `const ${name} = ${serializeRules(rules)} as Record<string, unknown>;`,
+  );
+  const body = `/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
+${parts.join('\n\n')}
+
+export const ecmaRules = {
+  ...eslintRules,
+  ...importRules,
+  ...oxcRules,
+  ...promiseRules,
+} as Record<string, unknown>;
+`;
+  writeFileSync(filePath, body);
+}
+
 const eslint = mapRules(configRules(eslintConfig));
 const importX = mapRules(configRules(importConfig));
 const typescript = mapRules(configRules(typescriptConfig));
 const reactAll = mapRules(configRules(reactConfig));
 const vitest = mapRules(configRules(vitestConfig));
 
-// typescript/* resolved from eslint core → typescript.ts; rest + import → ecma.ts
-const ecmaMapped = {};
+// typescript/* resolved from eslint core → typescript.ts; rest stay in eslint group
+const eslintMapped = {};
 const tsFromEslint = {};
 for (const [k, v] of Object.entries(eslint.mapped)) {
   if (k.startsWith('typescript/')) tsFromEslint[k] = v;
-  else ecmaMapped[k] = v;
+  else eslintMapped[k] = v;
 }
-Object.assign(ecmaMapped, importX.mapped);
+const importMapped = importX.mapped;
+const oxcMapped = pluginDefaults('oxc');
+const promiseMapped = pluginDefaults('promise');
+const ecmaMapped = { ...eslintMapped, ...importMapped, ...oxcMapped, ...promiseMapped };
 const typescriptMapped = { ...tsFromEslint, ...typescript.mapped };
 
 const rulesDir = join(root, 'rules');
 mkdirSync(rulesDir, { recursive: true });
 
-writeRulesModule(join(rulesDir, 'ecma.ts'), 'ecmaRules', ecmaMapped);
+writeEcmaModule(join(rulesDir, 'ecma.ts'), {
+  eslintRules: eslintMapped,
+  importRules: importMapped,
+  oxcRules: oxcMapped,
+  promiseRules: promiseMapped,
+});
 writeRulesModule(join(rulesDir, 'typescript.ts'), 'typescriptRules', typescriptMapped);
 writeRulesModule(join(rulesDir, 'react.ts'), 'reactRules', reactAll.mapped);
 writeRulesModule(join(rulesDir, 'vitest.ts'), 'vitestRules', vitest.mapped);
@@ -183,7 +217,7 @@ const categoriesOff = {
 // import { defineConfig } from 'oxlint';
 // export default defineConfig({ ...harris, env: { browser: true } });
 export default defineConfig({
-  plugins: ['eslint', 'import', 'typescript', 'react', 'jsx-a11y', 'vitest'],
+  plugins: ['eslint', 'import', 'oxc', 'promise', 'typescript', 'react', 'jsx-a11y', 'vitest'],
   categories: categoriesOff,
   options: {
     typeAware: true,
@@ -213,11 +247,16 @@ export { categoriesOff };
 
 // Drop rule options oxlint rejects (keep severity).
 const ruleModules = [
-  [join(rulesDir, 'ecma.ts'), 'ecmaRules', ecmaMapped],
   [join(rulesDir, 'typescript.ts'), 'typescriptRules', typescriptMapped],
   [join(rulesDir, 'react.ts'), 'reactRules', reactAll.mapped],
   [join(rulesDir, 'vitest.ts'), 'vitestRules', vitest.mapped],
 ];
+const ecmaGroups = {
+  eslintRules: eslintMapped,
+  importRules: importMapped,
+  oxcRules: oxcMapped,
+  promiseRules: promiseMapped,
+};
 const strippedOptions = [];
 for (let i = 0; i < 200; i++) {
   let err = '';
@@ -236,13 +275,23 @@ for (let i = 0; i < 200; i++) {
   if (!m) break;
   const rule = m[1];
   let fixed = false;
-  for (const [filePath, exportName, rules] of ruleModules) {
+  for (const [groupName, rules] of Object.entries(ecmaGroups)) {
     if (!(rule in rules) || !Array.isArray(rules[rule])) continue;
     strippedOptions.push({ rule, previous: rules[rule] });
     rules[rule] = rules[rule][0];
-    writeRulesModule(filePath, exportName, rules);
+    writeEcmaModule(join(rulesDir, 'ecma.ts'), ecmaGroups);
     fixed = true;
     break;
+  }
+  if (!fixed) {
+    for (const [filePath, exportName, rules] of ruleModules) {
+      if (!(rule in rules) || !Array.isArray(rules[rule])) continue;
+      strippedOptions.push({ rule, previous: rules[rule] });
+      rules[rule] = rules[rule][0];
+      writeRulesModule(filePath, exportName, rules);
+      fixed = true;
+      break;
+    }
   }
   if (!fixed) break;
 }

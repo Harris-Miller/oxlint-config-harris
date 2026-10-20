@@ -45,7 +45,7 @@ import { defineConfig } from 'oxlint';
 export default defineConfig({ ...harris /* local overrides */ });
 ```
 
-This package sets `categories` all `off` and enables plugins explicitly: `eslint`, `import`, `typescript`, `react`, `jsx-a11y`, `vitest`. Type-aware is on via `options.typeAware: true`. Consumers should run `oxlint --type-aware` (or equivalent) with `oxlint-tsgolint` installed.
+This package sets `categories` all `off` and enables plugins explicitly: `eslint`, `import`, `oxc`, `promise`, `typescript`, `react`, `jsx-a11y`, `vitest`. Type-aware is on via `options.typeAware: true`. Consumers should run `oxlint --type-aware` (or equivalent) with `oxlint-tsgolint` installed.
 
 ## Regenerating from ESLint
 
@@ -60,5 +60,5 @@ Generator reads `../eslint-config-harris/rules/*`, maps names onto oxlint’s `-
 ## Scope discipline
 
 - Keep this package oxlint-only (no ESLint runtime dependency).
-- Do not reintroduce unicorn/oxc/perfectionist/prettier plugins unless intentionally changing the shared defaults.
+- Do not reintroduce unicorn/perfectionist/prettier plugins unless intentionally changing the shared defaults.
 - `oxlint.config.ts` in this repo is a thin re-export for local lint; it is ignored via `ignorePatterns` so `no-restricted-exports` does not apply to the package entry.

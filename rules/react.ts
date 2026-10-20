@@ -1,5 +1,7 @@
+import type { DummyRuleMap } from 'oxlint';
+
 /** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
-export const reactRules = {
+export const reactRules: DummyRuleMap = {
   'react/button-has-type': 'error',
   'react/checked-requires-onchange-or-readonly': 'error',
   'react/display-name': 'off',
@@ -155,4 +157,4 @@ export const reactRules = {
   'jsx-a11y/role-supports-aria-props': 'error',
   'jsx-a11y/scope': 'error',
   'jsx-a11y/tabindex-no-positive': 'error',
-} as Record<string, unknown>;
+};

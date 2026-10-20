@@ -26,7 +26,7 @@ const categoriesOff = {
 // import { defineConfig } from 'oxlint';
 // export default defineConfig({ ...harris, env: { browser: true } });
 export default defineConfig({
-  plugins: ['eslint', 'import', 'typescript', 'react', 'jsx-a11y', 'vitest'],
+  plugins: ['eslint', 'import', 'oxc', 'promise', 'typescript', 'react', 'jsx-a11y', 'vitest'],
   categories: categoriesOff,
   options: {
     typeAware: true,
