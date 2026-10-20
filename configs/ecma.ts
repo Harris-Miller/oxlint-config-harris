@@ -9,15 +9,6 @@ const jsTsFiles = ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'];
 
 /** ESLint core + import + oxc + promise for all JS/TS. */
 export const ecma = defineConfig({
-  categories: {
-    correctness: 'off',
-    suspicious: 'off',
-    pedantic: 'off',
-    perf: 'off',
-    style: 'off',
-    restriction: 'off',
-    nursery: 'off',
-  },
   overrides: [
     {
       files: jsTsFiles,

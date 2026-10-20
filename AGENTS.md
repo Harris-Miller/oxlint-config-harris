@@ -22,15 +22,16 @@ Useful entry points (via the index above):
 
 - Package name: `oxlint-config-harris`
 - Entry: `index.ts` (TypeScript source exported directly; no build step)
-- Rules live in `rules/*.ts`; do not hand-edit generated maps unless the generator cannot express the change
+- Named exports only: `ecma`, `node`, `typescript`, `react`, `vitest`, `vitestRules` — no mono default config
+- Rule maps live in `rules/*.ts` (per plugin: `eslint`, `import`, `oxc`, `promise`, `node`, `react`, `jsx-a11y`, `typescript`, `vitest`); edit those files directly
+- Composable configs live in `configs/*.ts` and wire plugins + file globs around the rule maps only — they do **not** set `categories` or `options` (including `typeAware`)
 - Source of truth for rule intent: sibling `eslint-config-harris`
-- Unmapped ESLint rules are listed in `GAPS.md` (regenerated)
+- Unmapped ESLint rules are listed in `GAPS.md` (manual; the old generate script was removed)
+- License: MIT (`LICENSE`)
 
 ## Consumer config pattern
 
-Named configs: `ecma`, `node`, `typescript`, `react`, `vitest` (from `configs/`). Compose in the consumer root — `index.ts` only re-exports; it does not ship a mono `defineConfig`.
-
-Oxlint `extends` merges only `rules` / `plugins` / `overrides`. It does **not** merge `categories` or `options`. Set `categories` / `options.typeAware` in the root config. Setting `plugins` overwrites defaults (`unicorn` / `oxc`) — list every plugin you want (or `plugins: []` plus override plugins).
+Compose named configs in the consumer root:
 
 ```ts
 import { defineConfig } from 'oxlint';
@@ -38,9 +39,7 @@ import { ecma, react, typescript, vitest, vitestRules } from 'oxlint-config-harr
 
 export default defineConfig({
   extends: [ecma, typescript, react, vitest],
-  plugins: ['eslint', 'import', 'oxc', 'promise', 'typescript', 'react', 'jsx-a11y', 'vitest'],
-  categories: ecma.categories, // extends does not merge categories
-  options: { typeAware: true },
+  options: { typeAware: true }, // not shipped by typescript; set here or use --type-aware
   overrides: [
     {
       files: ['**/*.{test,spec}.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'],
@@ -50,20 +49,20 @@ export default defineConfig({
 });
 ```
 
-`vitest` enables the plugin and rules but matches no files until the consumer sets globs. Type-aware needs `oxlint-tsgolint` and `options.typeAware: true` (or `--type-aware`).
+Oxlint `extends` merges only `rules` / `plugins` / `overrides`. It does **not** merge `categories` or `options` — set those in the consumer if needed. Setting root `plugins` overwrites defaults (`unicorn` / `oxc`) — list every plugin you want, or leave root unset and use plugins from each config's overrides.
 
-## Regenerating from ESLint
+`vitest` enables the plugin and rules but matches no files until the consumer sets globs. Type-aware needs `oxlint-tsgolint` plus `options.typeAware: true` or `--type-aware` (the `typescript` config does not enable it).
+
+## Local scripts
 
 ```bash
-pnpm generate   # scripts/generate-from-eslint.mjs
-pnpm lint
+pnpm lint        # oxlint --type-aware
 pnpm typecheck
+pnpm format      # oxfmt
 ```
-
-Generator reads `../eslint-config-harris/rules/*`, maps names onto oxlint’s `--rules` list, writes `rules/*.ts` + `GAPS.md`. Prefer fixing mapping in the script over one-off edits in generated files.
 
 ## Scope discipline
 
 - Keep this package oxlint-only (no ESLint runtime dependency).
-- Do not reintroduce unicorn/perfectionist/prettier plugins unless intentionally changing the shared defaults.
-- `oxlint.config.ts` in this repo is a thin re-export for local lint; it is ignored via `ignorePatterns` so `no-restricted-exports` does not apply to the package entry.
+- Do not reintroduce unicorn/perfectionist/prettier plugins unless intentionally changing the shared defaults. Formatting is `oxfmt`, not Prettier.
+- `oxlint.config.ts` in this repo is the local lint entry (`extends: [ecma, typescript]`); it is ignored via `ignorePatterns` so `no-restricted-exports` does not apply to the package entry.
