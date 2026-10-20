@@ -1,6 +1,5 @@
-import type { DummyRuleMap } from 'oxlint';
 /** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
-export const vitestRules: DummyRuleMap = {
+export const vitestRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'vitest/consistent-test-it': ['error', { fn: 'it' }],
   'vitest/expect-expect': 'error',
   'vitest/max-nested-describe': ['warn', { max: 3 }],
@@ -30,4 +29,4 @@ export const vitestRules: DummyRuleMap = {
   'vitest/valid-expect': 'error',
   'vitest/valid-expect-in-promise': 'error',
   'vitest/valid-title': 'error',
-};
+});

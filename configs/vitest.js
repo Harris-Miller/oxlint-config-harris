@@ -1,6 +1,6 @@
 import { defineConfig } from 'oxlint';
 
-import { vitestRules } from '../rules/vitest.ts';
+import { vitestRules } from '../rules/vitest.js';
 
 export { vitestRules };
 

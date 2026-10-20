@@ -6,8 +6,9 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "checkJs": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["index.ts", "configs/**/*.ts", "rules/**/*.ts", "oxlint.config.ts"]
+  "include": ["index.js", "configs/**/*.js", "rules/**/*.js", "oxlint.config.ts"]
 }

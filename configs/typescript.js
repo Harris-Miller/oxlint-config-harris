@@ -1,6 +1,6 @@
 import { defineConfig } from 'oxlint';
 
-import { typescriptRules } from '../rules/typescript.ts';
+import { typescriptRules } from '../rules/typescript.js';
 
 const tsFiles = ['**/*.{ts,mts,cts,tsx}'];
 

@@ -1,6 +1,4 @@
-import type { DummyRuleMap } from 'oxlint';
-
-export const importRules: DummyRuleMap = {
+export const importRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
   'import/default': 'off',
   'import/export': 'error',
@@ -34,4 +32,4 @@ export const importRules: DummyRuleMap = {
   'import/no-webpack-loader-syntax': 'error',
   'import/prefer-default-export': 'off',
   'import/unambiguous': 'error',
-};
+});

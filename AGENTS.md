@@ -21,10 +21,10 @@ Useful entry points (via the index above):
 ## Package facts
 
 - Package name: `oxlint-config-harris`
-- Entry: `index.ts` (TypeScript source exported directly; no build step)
+- Entry: `index.js` (JS + JSDoc; no build step)
 - Named exports only: `ecma`, `node`, `typescript`, `react`, `vitest`, `vitestRules` — no mono default config
-- Rule maps live in `rules/*.ts` (per plugin: `eslint`, `import`, `oxc`, `promise`, `node`, `react`, `jsx-a11y`, `typescript`, `vitest`); edit those files directly
-- Composable configs live in `configs/*.ts` and wire plugins + file globs around the rule maps only — they do **not** set `categories` or `options` (including `typeAware`)
+- Rule maps live in `rules/*.js` (per plugin: `eslint`, `import`, `oxc`, `promise`, `node`, `react`, `jsx-a11y`, `typescript`, `vitest`); edit those files directly
+- Composable configs live in `configs/*.js` and wire plugins + file globs around the rule maps only — they do **not** set `categories` or `options` (including `typeAware`)
 - Source of truth for rule intent: sibling `eslint-config-harris`
 - Unmapped ESLint rules are listed in `GAPS.md` (manual; the old generate script was removed)
 - License: MIT (`LICENSE`)

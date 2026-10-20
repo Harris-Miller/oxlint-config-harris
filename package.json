@@ -5,20 +5,20 @@
   "license": "MIT",
   "author": "Harris Miller <harrismillerconsulting@gmail.com>",
   "files": [
-    "index.ts",
+    "index.js",
     "configs",
     "rules",
     "GAPS.md"
   ],
   "type": "module",
   "exports": {
-    ".": "./index.ts",
+    ".": "./index.js",
     "./package.json": "./package.json"
   },
   "scripts": {
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "lint": "oxlint --type-aware",
+    "lint": "oxlint --deny-warnings",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

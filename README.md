@@ -6,7 +6,7 @@ Requires `oxlint`, `oxlint-tsgolint`, and `typescript` (see `peerDependencies`).
 
 ## Usage
 
-Named configs — compose what you need. `index.ts` only re-exports; there is no mono default config.
+Named configs — compose what you need. `index.js` only re-exports; there is no mono default config.
 
 Oxlint `extends` merges `rules` / `plugins` / `overrides`. It does **not** merge `categories` or `options` — set those in the consumer root if you need them. These shareable configs only ship overrides (plugins + rules + file globs). Root `plugins` overwrites defaults (`unicorn` / `oxc`) — list every plugin you want, or rely on plugins set inside each config's overrides.
 
@@ -26,14 +26,14 @@ export default defineConfig({
 });
 ```
 
-| Export       | Covers                                      |
-| ------------ | ------------------------------------------- |
-| `ecma`       | eslint + import + oxc + promise (JS/TS)     |
-| `node`       | node plugin                                 |
-| `typescript` | typescript plugin + rules (TS/TSX)          |
-| `react`      | react + jsx-a11y (JSX/TSX)                  |
-| `vitest`     | vitest plugin; no file globs until you set them |
-| `vitestRules`| Rule map to attach under your own test globs |
+| Export        | Covers                                          |
+| ------------- | ----------------------------------------------- |
+| `ecma`        | eslint + import + oxc + promise (JS/TS)         |
+| `node`        | node plugin                                     |
+| `typescript`  | typescript plugin + rules (TS/TSX)              |
+| `react`       | react + jsx-a11y (JSX/TSX)                      |
+| `vitest`      | vitest plugin; no file globs until you set them |
+| `vitestRules` | Rule map to attach under your own test globs    |
 
 Run with type-aware linting (`oxlint-tsgolint` required):
 
@@ -43,13 +43,13 @@ oxlint --type-aware
 
 ## Layout
 
-| Path              | Role                                                              |
-| ----------------- | ----------------------------------------------------------------- |
-| `index.ts`        | Named re-exports of `configs/*`                                   |
-| `configs/`        | Composable `defineConfig` slices (`ecma`, `node`, `typescript`, …) |
-| `rules/`          | Per-plugin rule maps (`eslint`, `import`, `oxc`, `promise`, …)    |
-| `GAPS.md`         | ESLint rules with no oxlint equivalent yet                        |
-| `oxlint.config.ts`| Local lint entry (`extends: [ecma, typescript]`)                  |
+| Path               | Role                                                               |
+| ------------------ | ------------------------------------------------------------------ |
+| `index.js`         | Named re-exports of `configs/*`                                    |
+| `configs/`         | Composable `defineConfig` slices (`ecma`, `node`, `typescript`, …) |
+| `rules/`           | Per-plugin rule maps (`eslint`, `import`, `oxc`, `promise`, …)     |
+| `GAPS.md`          | ESLint rules with no oxlint equivalent yet                         |
+| `oxlint.config.ts` | Local lint entry (`extends: [ecma, typescript]`)                   |
 
 ```bash
 pnpm lint
