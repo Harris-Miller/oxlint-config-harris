@@ -1,7 +1,12 @@
-import type { OxlintConfig } from 'oxlint';
+import type { DummyRuleMap } from 'oxlint';
 
-export const ecma: OxlintConfig;
-export const node: OxlintConfig;
-export const react: OxlintConfig;
-export const typescript: OxlintConfig;
-export const vitest: OxlintConfig;
+export const ecmaRules: DummyRuleMap;
+export const nodeRules: DummyRuleMap;
+export const reactRules: DummyRuleMap;
+export const typescriptRules: DummyRuleMap;
+export const vitestRules: DummyRuleMap;
+export const jsTsFilesAll: string[];
+export const jsTsFilesNode: string[];
+export const tsFiles: string[];
+export const jsxFiles: string[];
+export const testFiles: string[];

@@ -1,8 +1,19 @@
 import { defineConfig } from 'oxlint';
 
-import { ecma } from './index.js';
+import { ecmaRules, jsTsFilesAll, tsFiles, typescriptRules } from './index.js';
 
 export default defineConfig({
-  extends: [ecma],
   ignorePatterns: ['node_modules'],
+  overrides: [
+    {
+      files: jsTsFilesAll,
+      plugins: ['eslint', 'import', 'oxc', 'promise'],
+      rules: ecmaRules,
+    },
+    {
+      files: tsFiles,
+      plugins: ['typescript'],
+      rules: typescriptRules,
+    },
+  ],
 });

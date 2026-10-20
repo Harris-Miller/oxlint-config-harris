@@ -7,9 +7,8 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "configs",
-    "rules",
-    "GAPS.md"
+    "extensionHelpers.js",
+    "rules"
   ],
   "type": "module",
   "types": "./index.d.ts",

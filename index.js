@@ -1,5 +1,6 @@
-export { ecma } from './configs/ecma.js';
-export { node } from './configs/node.js';
-export { react } from './configs/react.js';
-export { typescript } from './configs/typescript.js';
-export { vitest } from './configs/vitest.js';
+export { ecmaRules } from './rules/ecma.js';
+export { nodeRules } from './rules/node.js';
+export { reactRules } from './rules/react.js';
+export { typescriptRules } from './rules/typescript.js';
+export { vitestRules } from './rules/vitest.js';
+export { jsTsFilesAll, jsTsFilesNode, tsFiles, jsxFiles, testFiles } from './extensionHelpers.js';

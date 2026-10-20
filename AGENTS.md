@@ -21,51 +21,89 @@ Useful entry points (via the index above):
 ## Package facts
 
 - Package name: `oxlint-config-harris`
-- Entry: `index.js` (JS + JSDoc; no build step); typings in `index.d.ts` (`OxlintConfig`)
-- Named exports only: `ecma`, `node`, `typescript`, `react`, `vitest` — no mono default config, no `vitestRules` export
-- Rule maps live in `rules/*.js` (per plugin: `eslint`, `import`, `oxc`, `promise`, `node`, `react`, `jsx-a11y`, `typescript`, `vitest`); typed with `/** @type {import('oxlint').DummyRuleMap} */`
-- Composable configs live in `configs/*.js` and wire plugins + file globs around the rule maps only — they do **not** set `categories` or `options` (including `typeAware`)
+- Entry: `index.js` (JS; no build step); typings in `index.d.ts` (`DummyRuleMap` + glob `string[]`s)
+- Named exports only — **rule maps** + **file globs**, not `defineConfig` configs. No mono default config.
+- Rule maps: `ecmaRules`, `nodeRules`, `reactRules`, `typescriptRules`, `vitestRules`
+  - `rules/ecma.js` merges eslint + import + oxc + promise into `ecmaRules`
+  - `rules/react.js` merges react + jsx-a11y into `reactRules`
+  - Typed with `/** @type {import('oxlint').DummyRuleMap} */` on the maps
+- File globs live in `extensionHelpers.js`: `jsTsFilesAll`, `jsTsFilesNode`, `tsFiles`, `jsxFiles`, `testFiles`
+- Published `files`: `index.js`, `index.d.ts`, `extensionHelpers.js`, `rules/` (not `GAPS.md`)
+- This package does **not** set `categories`, `options` (including `typeAware`), or wire plugins for consumers — consumers own `defineConfig` / plugins / overrides
 - Source of truth for rule intent: sibling `eslint-config-harris`
-- Unmapped ESLint rules are listed in `GAPS.md` (manual; the old generate script was removed)
+- Unmapped ESLint rules are listed in `GAPS.md` (manual; local only; the old generate script was removed)
 - License: MIT (`LICENSE`)
 
 ## Consumer config pattern
 
-Compose named configs in the consumer root:
+Compose rule maps + globs in the consumer root; enable the matching plugins on each override:
 
 ```ts
 import { defineConfig } from 'oxlint';
-import { ecma, react, typescript, vitest } from 'oxlint-config-harris';
+import {
+  ecmaRules,
+  jsTsFilesAll,
+  jsxFiles,
+  reactRules,
+  testFiles,
+  tsFiles,
+  typescriptRules,
+  vitestRules,
+} from 'oxlint-config-harris';
 
 export default defineConfig({
-  extends: [ecma, typescript, react, vitest],
-  options: { typeAware: true }, // not shipped by typescript; set here or use --type-aware
+  options: { typeAware: true }, // not shipped by this package; set here or use --type-aware
+  overrides: [
+    {
+      files: jsTsFilesAll,
+      plugins: ['eslint', 'import', 'oxc', 'promise'],
+      rules: ecmaRules,
+    },
+    {
+      files: tsFiles,
+      plugins: ['typescript'],
+      rules: typescriptRules,
+    },
+    {
+      files: jsxFiles,
+      plugins: ['react', 'jsx-a11y'],
+      rules: reactRules,
+    },
+    {
+      files: testFiles,
+      plugins: ['vitest'],
+      rules: vitestRules,
+    },
+  ],
 });
 ```
 
-Oxlint `extends` merges only `rules` / `plugins` / `overrides`. It does **not** merge `categories` or `options` — set those in the consumer if needed. Setting root `plugins` overwrites defaults (`unicorn` / `oxc`) — list every plugin you want, or leave root unset and use plugins from each config's overrides.
+Setting root `plugins` overwrites defaults (`unicorn` / `oxc`) — list every plugin you want, or set plugins per override as above.
 
 Default file globs:
 
-- `ecma` — `**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}`
-- `node` — `**/*.{js,mjs,cjs,ts,mts,cts}`
-- `typescript` — `**/*.{ts,mts,cts,tsx}`
-- `react` — `**/*.{jsx,tsx}`
-- `vitest` — `**/*.test.{js,mjs,cjs,jsx,ts,mts,cts,tsx}`, `**/*.spec.{jsx,tsx}`
+- `jsTsFilesAll` — `**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}`
+- `jsTsFilesNode` — `**/*.{js,mjs,cjs,ts,mts,cts}`
+- `tsFiles` — `**/*.{ts,mts,cts,tsx}`
+- `jsxFiles` — `**/*.{jsx,tsx}`
+- `testFiles` — `**/*.test.{js,mjs,cjs,ts,mts,cts}`, `**/*.spec.{jsx,tsx}`
 
-Type-aware needs `oxlint-tsgolint` plus `options.typeAware: true` or `--type-aware` (the `typescript` config does not enable it).
+Suggested pairing: `ecmaRules` ↔ `jsTsFilesAll`, `nodeRules` ↔ `jsTsFilesNode` + `['node']`, `typescriptRules` ↔ `tsFiles`, `reactRules` ↔ `jsxFiles`, `vitestRules` ↔ `testFiles`.
+
+Type-aware needs `oxlint-tsgolint` plus `options.typeAware: true` or `--type-aware`.
 
 ## Local scripts
 
 ```bash
 pnpm lint        # oxlint --deny-warnings
 pnpm format      # oxfmt
+pnpm typecheck   # tsc --noEmit (oxlint.config.ts only)
 ```
 
-No `typecheck` script / `tsconfig.json` — package ships JS + `index.d.ts` only.
+`tsconfig.json` includes only `oxlint.config.ts`. Package ships JS + `index.d.ts` (no build).
 
 ## Scope discipline
 
 - Keep this package oxlint-only (no ESLint runtime dependency).
 - Do not reintroduce unicorn/perfectionist/prettier plugins unless intentionally changing the shared defaults. Formatting is `oxfmt`, not Prettier.
-- `oxlint.config.ts` in this repo is the local lint entry (`extends: [ecma]`); keep it out of published surface concerns.
+- `oxlint.config.ts` in this repo is the local lint entry (ecma + typescript overrides); keep it out of published surface concerns.

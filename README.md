@@ -1,32 +1,78 @@
 # oxlint-config-harris
 
-Harris' shared [Oxlint](https://oxc.rs/) config, ported from [`eslint-config-harris`](../eslint-config-harris).
+Harris' shared [Oxlint](https://oxc.rs/) rule maps and file globs, ported from [`eslint-config-harris`](../eslint-config-harris).
 
 Requires `oxlint`, `oxlint-tsgolint`, and `typescript` (see `peerDependencies`). MIT licensed.
 
 ## Usage
 
-Named configs — compose what you need. `index.js` re-exports; `index.d.ts` types them as `OxlintConfig`. There is no mono default config.
+This package ships **rule maps** and **file globs** — not ready-made `defineConfig` slices. Wire plugins + `overrides` in the consumer.
 
-Oxlint `extends` merges `rules` / `plugins` / `overrides`. It does **not** merge `categories` or `options` — set those in the consumer root if you need them. These shareable configs only ship plugins + rules + file globs. Root `plugins` overwrites defaults (`unicorn` / `oxc`) — list every plugin you want, or rely on plugins set inside each config's overrides.
+`index.js` re-exports; `index.d.ts` types rule maps as `DummyRuleMap`. There is no mono default config.
+
+Root `plugins` overwrites oxlint defaults (`unicorn` / `oxc`) — list every plugin you want on each override (or at root). `categories` / `options` (including `typeAware`) are never set here; set those in the consumer if needed.
 
 ```ts
 import { defineConfig } from 'oxlint';
-import { ecma, react, typescript, vitest } from 'oxlint-config-harris';
+import {
+  ecmaRules,
+  jsTsFilesAll,
+  jsxFiles,
+  reactRules,
+  testFiles,
+  tsFiles,
+  typescriptRules,
+  vitestRules,
+} from 'oxlint-config-harris';
 
 export default defineConfig({
-  extends: [ecma, typescript, react, vitest],
-  options: { typeAware: true }, // not set by the typescript config; set here or use --type-aware
+  options: { typeAware: true }, // set here or use --type-aware
+  overrides: [
+    {
+      files: jsTsFilesAll,
+      plugins: ['eslint', 'import', 'oxc', 'promise'],
+      rules: ecmaRules,
+    },
+    {
+      files: tsFiles,
+      plugins: ['typescript'],
+      rules: typescriptRules,
+    },
+    {
+      files: jsxFiles,
+      plugins: ['react', 'jsx-a11y'],
+      rules: reactRules,
+    },
+    {
+      files: testFiles,
+      plugins: ['vitest'],
+      rules: vitestRules,
+    },
+  ],
 });
 ```
 
-| Export       | Covers                                                        |
-| ------------ | ------------------------------------------------------------- |
-| `ecma`       | eslint + import + oxc + promise (JS/TS)                       |
-| `node`       | node plugin (`**/*.{js,mjs,cjs,ts,mts,cts}`)                  |
-| `typescript` | typescript plugin + rules (TS/TSX)                            |
-| `react`      | react + jsx-a11y (JSX/TSX)                                    |
-| `vitest`     | vitest plugin + rules (`*.test.{js…tsx}`, `*.spec.{jsx,tsx}`) |
+### Rule maps
+
+| Export            | Covers                          |
+| ----------------- | ------------------------------- |
+| `ecmaRules`       | eslint + import + oxc + promise |
+| `nodeRules`       | node                            |
+| `typescriptRules` | typescript                      |
+| `reactRules`      | react + jsx-a11y                |
+| `vitestRules`     | vitest                          |
+
+### File globs
+
+| Export          | Patterns                                                   |
+| --------------- | ---------------------------------------------------------- |
+| `jsTsFilesAll`  | `**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}`                     |
+| `jsTsFilesNode` | `**/*.{js,mjs,cjs,ts,mts,cts}`                             |
+| `tsFiles`       | `**/*.{ts,mts,cts,tsx}`                                    |
+| `jsxFiles`      | `**/*.{jsx,tsx}`                                           |
+| `testFiles`     | `**/*.test.{js,mjs,cjs,ts,mts,cts}`, `**/*.spec.{jsx,tsx}` |
+
+Suggested pairing: `ecmaRules` ↔ `jsTsFilesAll`, `nodeRules` ↔ `jsTsFilesNode`, `typescriptRules` ↔ `tsFiles`, `reactRules` ↔ `jsxFiles`, `vitestRules` ↔ `testFiles`.
 
 Run with type-aware linting (`oxlint-tsgolint` required):
 
@@ -36,18 +82,20 @@ oxlint --type-aware
 
 ## Layout
 
-| Path               | Role                                                               |
-| ------------------ | ------------------------------------------------------------------ |
-| `index.js`         | Named re-exports of `configs/*`                                    |
-| `index.d.ts`       | Public types (`OxlintConfig` for each export)                      |
-| `configs/`         | Composable `defineConfig` slices (`ecma`, `node`, `typescript`, …) |
-| `rules/`           | Per-plugin rule maps (`eslint`, `import`, `oxc`, `promise`, …)     |
-| `GAPS.md`          | ESLint rules with no oxlint equivalent yet                         |
-| `oxlint.config.ts` | Local lint entry (`extends: [ecma]`)                               |
+| Path                  | Role                                                        |
+| --------------------- | ----------------------------------------------------------- |
+| `index.js`            | Named re-exports of rule maps + globs                       |
+| `index.d.ts`          | Public types (`DummyRuleMap` + `string[]` globs)            |
+| `extensionHelpers.js` | File glob constants                                         |
+| `rules/`              | Rule maps (`ecma`, `node`, `react`, `typescript`, `vitest`) |
+| `GAPS.md`             | ESLint rules with no oxlint equivalent yet (not published)  |
+| `oxlint.config.ts`    | Local lint entry (ecma + typescript overrides)              |
+| `tsconfig.json`       | Types `oxlint.config.ts` only                               |
 
 ```bash
 pnpm lint
 pnpm format
+pnpm typecheck
 ```
 
 ## Docs
