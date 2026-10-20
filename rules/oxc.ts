@@ -1,6 +1,5 @@
 import type { DummyRuleMap } from 'oxlint';
 
-/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
 export const oxcRules: DummyRuleMap = {
   'oxc/approx-constant': 'off',
   'oxc/bad-array-method-on-arguments': 'error',

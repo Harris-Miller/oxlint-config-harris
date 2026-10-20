@@ -1,6 +1,5 @@
 import type { DummyRuleMap } from 'oxlint';
 
-/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
 export const promiseRules: DummyRuleMap = {
   'promise/always-return': 'off',
   'promise/avoid-new': 'off',

@@ -1,6 +1,7 @@
 import { defineConfig } from 'oxlint';
 
 import { reactRules } from '../rules/react.ts';
+import { jsxA11yRules } from '../rules/jsx-a11y.ts';
 
 const jsxFiles = ['**/*.{jsx,tsx}'];
 
@@ -10,7 +11,10 @@ export const react = defineConfig({
     {
       files: jsxFiles,
       plugins: ['react', 'jsx-a11y'],
-      rules: reactRules,
+      rules: {
+        ...reactRules,
+        ...jsxA11yRules,
+      },
     },
   ],
 });

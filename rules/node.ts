@@ -1,6 +1,5 @@
 import type { DummyRuleMap } from 'oxlint';
 
-/** Oxlint node plugin rules — all off; options filled with schema defaults where present. */
 export const nodeRules: DummyRuleMap = {
   'node/callback-return': ['off', ['callback', 'cb', 'next']],
   'node/exports-style': ['off', 'module.exports', { allowBatchAssign: false }],

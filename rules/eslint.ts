@@ -1,6 +1,5 @@
 import type { DummyRuleMap } from 'oxlint';
 
-/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
 export const eslintRules: DummyRuleMap = {
   'eslint/array-callback-return': ['error', { allowImplicit: true }],
   'eslint/arrow-body-style': 'off',

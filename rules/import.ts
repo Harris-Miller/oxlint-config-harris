@@ -1,6 +1,5 @@
 import type { DummyRuleMap } from 'oxlint';
 
-/** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
 export const importRules: DummyRuleMap = {
   'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
   'import/default': 'off',
