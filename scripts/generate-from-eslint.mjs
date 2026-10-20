@@ -16,9 +16,7 @@ import vitestConfig from '../../eslint-config-harris/rules/vitest.js';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const oxlintBin = join(root, 'node_modules/.bin/oxlint');
 
-const oxlintRules = JSON.parse(
-  execFileSync(oxlintBin, ['--rules', '--format=json'], { encoding: 'utf8' }),
-);
+const oxlintRules = JSON.parse(execFileSync(oxlintBin, ['--rules', '--format=json'], { encoding: 'utf8' }));
 const oxlintSet = new Set(oxlintRules.map(r => `${r.scope.replaceAll('_', '-')}/${r.value}`));
 
 function configRules(config) {

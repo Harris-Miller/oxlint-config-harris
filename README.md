@@ -32,12 +32,12 @@ oxlint --type-aware
 
 ## Layout
 
-| Path | Role |
-|------|------|
-| `index.ts` | Shared config (`plugins`, categories off, `typeAware`, overrides) |
-| `rules/` | Rule maps: `ecma`, `typescript`, `react`, `vitest` |
-| `GAPS.md` | ESLint rules with no oxlint equivalent yet |
-| `scripts/generate-from-eslint.mjs` | Regenerates rule files + `GAPS.md` from `eslint-config-harris` |
+| Path                               | Role                                                              |
+| ---------------------------------- | ----------------------------------------------------------------- |
+| `index.ts`                         | Shared config (`plugins`, categories off, `typeAware`, overrides) |
+| `rules/`                           | Rule maps: `ecma`, `typescript`, `react`, `vitest`                |
+| `GAPS.md`                          | ESLint rules with no oxlint equivalent yet                        |
+| `scripts/generate-from-eslint.mjs` | Regenerates rule files + `GAPS.md` from `eslint-config-harris`    |
 
 ```bash
 pnpm generate

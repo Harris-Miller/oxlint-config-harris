@@ -42,7 +42,7 @@ export { default } from 'oxlint-config-harris';
 import harris from 'oxlint-config-harris';
 import { defineConfig } from 'oxlint';
 
-export default defineConfig({ ...harris, /* local overrides */ });
+export default defineConfig({ ...harris /* local overrides */ });
 ```
 
 This package sets `categories` all `off` and enables plugins explicitly: `eslint`, `import`, `typescript`, `react`, `jsx-a11y`, `vitest`. Type-aware is on via `options.typeAware: true`. Consumers should run `oxlint --type-aware` (or equivalent) with `oxlint-tsgolint` installed.
