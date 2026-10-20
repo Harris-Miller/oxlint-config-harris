@@ -1,14 +1,31 @@
 {
-  "name": "oxc-config-harris",
+  "name": "oxlint-config-harris",
   "version": "0.1.0",
   "type": "module",
+  "description": "Harris' Oxlint config",
   "packageManager": "pnpm@12.14.0",
   "author": "Harris Miller <harrismillerconsulting@gmail.com>",
   "license": "MIT",
+  "files": [
+    "index.ts",
+    "rules",
+    "GAPS.md"
+  ],
   "exports": {
-    ".": "./index.js"
+    ".": "./index.ts",
+    "./package.json": "./package.json"
   },
-  "scripts": {},
-  "dependencies": {},
-  "devDependencies": {}
+  "scripts": {
+    "generate": "node scripts/generate-from-eslint.mjs",
+    "lint": "oxlint --type-aware"
+  },
+  "peerDependencies": {
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2004"
+  },
+  "devDependencies": {
+    "oxlint": "1.89.0",
+    "oxlint-tsgolint": "7.0.2004",
+    "typescript": "~5.9.3"
+  }
 }
