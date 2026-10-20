@@ -1,4 +1,5 @@
-export const eslintRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const eslintRules = {
   'eslint/array-callback-return': ['error', { allowImplicit: true }],
   'eslint/arrow-body-style': 'off',
   'eslint/block-scoped-var': 'error',
@@ -242,4 +243,4 @@ export const eslintRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'eslint/valid-typeof': 'error',
   'eslint/vars-on-top': 'error',
   'eslint/yoda': 'error',
-});
+};

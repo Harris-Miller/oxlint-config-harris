@@ -2,17 +2,14 @@ import { defineConfig } from 'oxlint';
 
 import { vitestRules } from '../rules/vitest.js';
 
-export { vitestRules };
+const testFiles = ['**/*.test.{js,mjs,cjs,jsx,ts,mts,cts,tsx}', '**/*.spec.{jsx,tsx}'];
 
-/**
- * Vitest plugin + rules. No file globs by default — set `overrides[].files`
- * in the consumer config to match the project's test naming.
- */
+/** Vitest plugin + rules for `*.test.*` (all JS/TS) and `*.spec.{jsx,tsx}`. */
 export const vitest = defineConfig({
   plugins: ['vitest'],
   overrides: [
     {
-      files: [],
+      files: testFiles,
       rules: vitestRules,
     },
   ],

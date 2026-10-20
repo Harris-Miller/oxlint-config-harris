@@ -1,4 +1,5 @@
-export const oxcRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const oxcRules = {
   'oxc/approx-constant': 'off',
   'oxc/bad-array-method-on-arguments': 'error',
   'oxc/bad-bitwise-operator': 'off',
@@ -26,4 +27,4 @@ export const oxcRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'oxc/number-arg-out-of-range': 'error',
   'oxc/only-used-in-recursion': 'error',
   'oxc/uninvoked-array-callback': 'error',
-});
+};

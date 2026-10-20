@@ -1,4 +1,5 @@
-export const jsxA11yRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const jsxA11yRules = {
   'jsx-a11y/alt-text': [
     'error',
     {
@@ -82,4 +83,4 @@ export const jsxA11yRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'jsx-a11y/role-supports-aria-props': 'error',
   'jsx-a11y/scope': 'error',
   'jsx-a11y/tabindex-no-positive': 'error',
-});
+};

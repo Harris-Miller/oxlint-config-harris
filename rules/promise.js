@@ -1,4 +1,5 @@
-export const promiseRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const promiseRules = {
   'promise/always-return': 'off',
   'promise/avoid-new': 'off',
   'promise/catch-or-return': 'off',
@@ -15,4 +16,4 @@ export const promiseRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'promise/prefer-catch': 'off',
   'promise/spec-only': 'off',
   'promise/valid-params': 'off',
-});
+};

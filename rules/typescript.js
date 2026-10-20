@@ -1,5 +1,6 @@
 /** Ported from eslint-config-harris — regenerate via scripts/generate-from-eslint.mjs */
-export const typescriptRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const typescriptRules = {
   'eslint/default-case': 'off',
   'eslint/default-param-last': 'error',
   'eslint/init-declarations': ['off', 'always'],
@@ -141,4 +142,4 @@ export const typescriptRules = /** @satisfies {import('oxlint').DummyRuleMap} */
   'typescript/unbound-method': 'error',
   'typescript/unified-signatures': 'error',
   'typescript/use-unknown-in-catch-callback-variable': 'error',
-});
+};

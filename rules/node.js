@@ -1,4 +1,5 @@
-export const nodeRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const nodeRules = {
   'node/callback-return': ['off', ['callback', 'cb', 'next']],
   'node/exports-style': ['off', 'module.exports', { allowBatchAssign: false }],
   'node/global-require': 'off',
@@ -10,4 +11,4 @@ export const nodeRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'node/no-process-env': ['off', { allowedVariables: [] }],
   'node/no-sync': ['off', { allowAtRootLevel: false, ignores: [] }],
   'node/no-top-level-await': ['off', { ignoreBin: false }],
-});
+};

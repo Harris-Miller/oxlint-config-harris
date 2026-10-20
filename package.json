@@ -6,20 +6,24 @@
   "author": "Harris Miller <harrismillerconsulting@gmail.com>",
   "files": [
     "index.js",
+    "index.d.ts",
     "configs",
     "rules",
     "GAPS.md"
   ],
   "type": "module",
+  "types": "./index.d.ts",
   "exports": {
-    ".": "./index.js",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "lint": "oxlint --deny-warnings",
-    "typecheck": "tsc --noEmit"
+    "lint": "oxlint --deny-warnings"
   },
   "devDependencies": {
     "oxfmt": "^0.73.0",

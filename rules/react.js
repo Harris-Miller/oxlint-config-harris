@@ -1,4 +1,5 @@
-export const reactRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const reactRules = {
   'react/button-has-type': 'error',
   'react/checked-requires-onchange-or-readonly': 'error',
   'react/display-name': 'off',
@@ -71,4 +72,4 @@ export const reactRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'react/unsupported-syntax': 'error',
   'react/use-memo': 'error',
   'react/void-dom-elements-no-children': 'error',
-});
+};

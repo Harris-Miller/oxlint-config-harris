@@ -1,4 +1,5 @@
-export const importRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
+/** @type {import('oxlint').DummyRuleMap} */
+export const importRules = {
   'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
   'import/default': 'off',
   'import/export': 'error',
@@ -32,4 +33,4 @@ export const importRules = /** @satisfies {import('oxlint').DummyRuleMap} */ ({
   'import/no-webpack-loader-syntax': 'error',
   'import/prefer-default-export': 'off',
   'import/unambiguous': 'error',
-});
+};
